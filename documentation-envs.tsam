@@ -1,0 +1,22 @@
+//Read as:
+//2 = number of unique envs
+//3 = number of sites in env 0
+//for each site: 1 = element index, direct a, b, c
+//fit energy
+//whether we've trained on this env or not (1 or 0)
+//2 = number of sites in env 1
+// etc...
+BEGIN ENVS
+2
+3 
+1 0.500000 -0.500000 0.000000 
+2 0.000000 -0.500000 0.000000
+2 -0.500000 0.000000 0.000000
+-2.487
+1
+2 
+2 -0.625000 -0.500000 0.000000
+1 1.500000 0.000000 1.250000
+-2.011 
+1
+END ENVS

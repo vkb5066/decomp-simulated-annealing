@@ -1,0 +1,26 @@
+//angstroms
+BEGIN CUTOFF
+3.1 
+END CUTOFF
+
+
+//number of annealing steps, (or number of struct gen steps), starting step
+//initial thermal energy per site, final thermal energy per site (eV/nSites)
+//fraction of cooling routine to begin, end cooling at
+//alpha parameter (2/3 < a < 5 is fine - a = 1 is a normal value)
+//random seed (if -1, seed from current time)
+BEGIN ANNEAL
+1000 0
+5.0 0.0
+0.05 0.95
+1.0
+-1 
+END ANNEAL
+
+//This one is optional
+//number of sites in this config followed by element indices in the same order as read in lattice infile
+//WARNING: assumes that you've written this to follow stoichiometry, sublattice rules.
+BEGIN STAggggggggggggggggRTCONFIG
+48 
+1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0
+END STARTCONFIG
