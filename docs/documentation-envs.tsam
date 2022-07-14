@@ -1,0 +1,22 @@
+//Read as:
+//2 = number of unique envs
+//3 = number of sites in env 0
+//for each site: 1 = element index, direct a, b, c
+//-2.487 = fit energy
+//6 = number of decomp reps this env has
+//2 = number of sites in env 1
+// etc...
+BEGIN ENVS
+2
+3 
+1 0.500000 -0.500000 0.000000 6.25 -6.25 0.0
+2 0.000000 -0.500000 0.000000 0.0 -6.25 0.0
+2 -0.500000 0.000000 0.000000 6.25 0.0 0.0
+-2.487
+6
+2 
+2 -0.625000 -0.500000 0.000000 -7.813 -6.25 0.0
+1 1.500000 0.000000 1.250000 18.75 0.0 15.625
+-2.011 
+1
+END ENVS

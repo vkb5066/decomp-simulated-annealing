@@ -1,0 +1,34 @@
++Only the first letter of the CLAs matter, so instead of e.g.
+ -l lattice.tsam, you could write -lattice lattice.tsam.
++Case does not matter.
++Unless otherwise stated, CLAs are entered as '-x arg' where 
+ 'x' is the command key and 'arg' is the argument 
++CLAs always overwrite the parameters in the input files
+
+Structure Generation:
+-l ..... lattice definition file (default lattice.tsam)
+-p ..... infile parameters file (default runparams.tsam)
+-w ..... warm-start file 
+-r ..... cutoff radius
+-n ..... number of total structure gen steps
+-d ..... number of decompositions per unique chem env
+-s ..... overwritten swapping probabilities
+         NOTE: variable number of arguments.  
+         ex:  '-s 3 0.5 0.24 0.26' 
+         here, '3' is the number of sublattices, followed by
+         normalized swapping probabilities for the 0th, 1st, 2nd 
+         sublattice.
+
+Simulated annealing: 
+-l ..... lattice definition file (default lattice.tsam)
+-p ..... infile parameters file (default runparams.tsam)
+-e ..... environment file (default envs.tsam)
+-r ..... cutoff radius
+-n ..... number of total simulated annealing steps
+-t ..... beginning thermal energy, eV/site
+-s ..... overwritten swapping probabilities
+         NOTE: variable number of arguments.  
+         ex:  '-s 3 0.5 0.24 0.26' 
+         here, '3' is the number of sublattices, followed by
+         normalized swapping probabilities for the 0th, 1st, 2nd 
+         sublattice.

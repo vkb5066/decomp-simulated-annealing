@@ -1,0 +1,86 @@
+(1) Build
+ -Go to 'build/'
+ -Run './compile.sh'
+ -Structure gen executable = 'rgen', simulated annealing
+  executable = 'rsim'
+
+(2) Structure generation 
+ -Prepare a <lattice> and <runparams> file (see 
+  'documentation-*' for file format)
+ -Run the structure generation with 
+  './rgen -l <lattice> -p <runparams> 
+  (you should redirect this to a file - either use 
+  nohup or the '>' key)
+
+(3) Fit the structures
+ -Run './dsplit2 <path to rgen output file> to "split"
+  the output into three files:
+  a. a *.env (chemical environment) file - the
+     descriptors, used for the annealing process
+  b. a *.dec (structure decomposition) file - the matrix
+     that lists the chemical environment makeups of the
+     random structures, used for fitting the model
+  c. a *.occ (site occupancy) file - the occupancies of 
+     the random structures, used for building POSCARs
+ -Go to 'fit/'
+ -Edit the first couple of lines in 'WritePoscars.py' to
+  find the three split files as well as the <lattice> 
+  input file
+ -Run 'WritePoscars.py'
+ -The directories 'all/*/' will be made - run VASP in
+  all of them
+ -When finished, run './writeOutput.sh'.  output.csv 
+  be made, containing the total energies of each VASP 
+  run 
+ -Edit the first couple of lines in 'FitEnergies.py' to
+  find the three split files as well as the output from
+  'writeOutput.sh'
+ -Run 'FitEnergies.py' to get a <env> file
+
+(4) Simulated annealing
+ -Run the simulated annealing routine with 
+  './rsim -l <lattice> -p <runparams> -e <env>
+
+**Extra Notes**
+ -'build/Constants.h' has some variables that you may 
+  want to change:
+   (a) N_REALLOC must be >= 2*(number of sites) + 1
+   (b) when writing to file, PRINTSTYLE = 0 is a 
+       good idea 
+  mind that you have to re-compile the programs for
+  changes to take affect
+ -The structure generation can be 'warm-started' with
+  the results of a previous run by:
+   (a) 'catting' the *.env, *.dec, and *.occ files 
+       (in that order!) into a new file 
+   (b) running 'sgen' with the additional argument 
+       -w <path to warm start file>
+ -The simulated annealing can be 'warm-started' with 
+  any configuration by setting a starting occupancy
+  in the <runparams>
+
+ -The default output of 'rgen' may look like this
+  (before the run is finished, that is):
+   GEN: n(tot)   n(unqS)  n(unqE)  n(lunqE) n(unrE) n(collE) n(collD)
+   GEN: 00002500 00000090 00000090 00001102 0000000 00000012 00001560
+  the lines are read as:
+   total number of steps run, number of unique 
+   structures found, number of unique environments 
+   found, number of iterations since the last unique
+   environment was found, the number of unique
+   environments that don't yet have structures that
+   it can be trained on, number of collisions in the env
+   and unique decomp hash tables. 
+  Ideally, n(lunqE) is large, n(unrE) is 0, and n(coll*)
+  are small  
+
+-The output of 'rsim' may look like this:
+   OPT: n    e(n)    e(n-1)    e(opt)  tau    noise
+   OPT: ---------------------------------------------
+   OPT: 001 -01.6218 -01.6227 -01.6227 0.5499 1.01201
+  the lines are read as:
+   total number of steps run, energy of the trial
+   config, energy of the last accepted config, energy
+   of the current best config, thermal energy, and the
+   factor multiplied to the current tau to help 
+   improve convergence

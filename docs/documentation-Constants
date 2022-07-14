@@ -1,0 +1,19 @@
+Constants.h contains some things that you may want to change, and some
+things that you don't want to change.  
+If there are no comments explaining what something does, it shouldn't 
+be changed.  
+
+
+The numerical extensions are important - if they're there, and you
+change something, make sure to keep the extension! 
+i.e. if you want to get an annealing printout every 256 lines, you'd
+change ANN_PRINTEVERY to 256llu, NOT 256.  
+
+SORT_TYPE switches between gnu qsort() and a specialized insertion
+sort.  qsort() is good, but includes a lot of overhead.
+For small cutoff radaii, the insertion sort will be faster.  If your 
+environments have more than 15 or so sites each, qsort() will be faster.
+
+HASH_TABLE_*, GHASH_TABLE* should be played around with.  The former
+has a much bigger impact on speed than the latter.  
+The latter only applies to structure generation.    

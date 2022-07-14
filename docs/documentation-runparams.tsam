@@ -1,0 +1,22 @@
+//Site-centered cluster dist, angstroms
+BEGIN CUTOFF
+3.11 
+END CUTOFF
+
+
+//number of annealing steps (or number of struct gen steps), starting step (or number of unique decomps per chem env)
+//initial thermal energy per site (eV/nSites)
+//random seed (if -1, seed from current time)
+BEGIN ANNEAL
+1000 0
+5.0
+-1 
+END ANNEAL
+
+//This one is optional
+//number of sites in this config followed by element indices in the same order as read in lattice infile
+//WARNING: assumes that you've written this to follow stoichiometry, sublattice rules.
+BEGIN STARTCONFIG
+48 
+1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0
+END STARTCONFIG
