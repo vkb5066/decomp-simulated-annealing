@@ -219,7 +219,6 @@ int main(int argc, char *argv[]){
 	env* oldEnv; env* newEnv; env* tmpE; uint* query;
 	ushort hKey; uint addInd; ushort dSuccess;
 	for(uvlong n = 0llu; n < nSteps; ++n){
-
 		////set the current cell's decomposition...
 		for(ushort i = 0; i < nSites; ++i){
 			if(envBase[i]->recalc){
@@ -302,7 +301,10 @@ int main(int argc, char *argv[]){
 					accum += unqDecs[nUnqDecC][i + (ushort)1];
 				}
 				unqDecTable[hKey].nEntries--;
-				unqDecTable[hKey].sparseArrs = realloc(unqDecTable[hKey].sparseArrs, unqDecTable[hKey].nEntries*sizeof(uint));
+				unqDecTable[hKey].sparseArrs = realloc(
+											   unqDecTable[hKey].sparseArrs, 
+									unqDecTable[hKey].nEntries*sizeof(uint*)
+													  );
 				free(unqDecs[nUnqDecC]);
 				if(unqDecTable[hKey].nEntries) decColls--;
 			}

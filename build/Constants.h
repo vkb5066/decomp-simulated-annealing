@@ -20,8 +20,8 @@ typedef struct gbkt gbkt;
 #define BASE 10u
 #define INFILE_LINE_MAX 1024u ///lines to read in infile before aborting
 #define LINESIZE 255u ///max len of any given line in input file
-#define GEN_PRINTEVERY 4096llu ///print out update every PRINTEVERY lines
-#define ANN_PRINTEVERY 4096llu ///ditto ^
+#define GEN_PRINTEVERY 2048llu ///print out update every PRINTEVERY lines
+#define ANN_PRINTEVERY 2048llu ///ditto ^
 #define GEN_PRINTSTYLE 1 //0: no print, 1: a ton of values, 2: % done
 #define ANN_PRINTSTYLE 1 ///ditto ^.  1: new lines, 2: no new lines
 
