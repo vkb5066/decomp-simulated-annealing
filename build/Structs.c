@@ -145,6 +145,7 @@ void Dealloc_b(branch** b){
 		Dealloc_b(&((*b)->branches[i]));
 	}
 
+	free((*b)->branches);
 	free(*b); ///do NOT free the env pointers those are done elsewhere
 }
 
@@ -251,7 +252,7 @@ void DeallocTable_h(hbkt* h){
 	for(ushort i = 0; i < HASH_TABLE_LEN; ++i){
 		for(ushort j = 0; j < h[i].nEntries; ++j){
 			free(h[i].specArrs[j]);
-			Dealloc_b(h[i].branchHeads + j);
+			Dealloc_b(&(h[i].branchHeads[j]));
 		}
 		free(h[i].specArrs);
 		free(h[i].branchHeads);

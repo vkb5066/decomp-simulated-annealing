@@ -336,6 +336,7 @@ int main(int argc, char *argv[]){
 		for(ushort j = 0; j < envBase[i]->nSites; ++j){
 			free(envBase[i]->sites[j]);
 		}
+		free(envBase[i]->sites);
 		free(envBase[i]->sortedSpecies);
 		free(envBase[i]->sortedDists);
 		free(envBase[i]);
@@ -346,6 +347,7 @@ int main(int argc, char *argv[]){
 		for(ushort j = 0; j < envBaseTrial[i]->nSites; ++j){
 			free(envBaseTrial[i]->sites[j]);
 		}
+		free(envBaseTrial[i]->sites);
 		free(envBaseTrial[i]->sortedSpecies);
 		free(envBaseTrial[i]->sortedDists);
 		free(envBaseTrial[i]);
@@ -358,6 +360,7 @@ int main(int argc, char *argv[]){
 		for(ushort j = 0; j < fitEnvs[i]->nSites; ++j){
 			free(fitEnvs[i]->sites[j]);
 		}
+		free(fitEnvs[i]->sites);
 		free(fitEnvs[i]->sortedSpecies);
 		free(fitEnvs[i]->sortedDists);
 		free(fitEnvs[i]);
