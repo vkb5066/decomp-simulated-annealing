@@ -8,7 +8,7 @@ END CUTOFF
 //initial thermal energy per site (eV/nSites)
 //random seed (if -1, seed from current time)
 BEGIN ANNEAL
-1000 0
+1001 1
 5.0
 -1 
 END ANNEAL

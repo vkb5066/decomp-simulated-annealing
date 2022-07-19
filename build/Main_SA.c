@@ -1,4 +1,3 @@
-#if 0
 //Basic Simulated Annealing Algo
 #include <stdio.h>
 #include <stdlib.h>
@@ -387,4 +386,3 @@ int main(int argc, char *argv[]){
 
 	return 0;
 }
-#endif

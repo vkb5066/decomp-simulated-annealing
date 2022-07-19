@@ -2,8 +2,8 @@
 from headerSimAnn import *
 
 #input
-BASE_NAME = "out" ##name of split files without the final extensions
-LATTICE_FILE_NAME = "cubii4Lattice.tsam"
+BASE_NAME = "trn" ##name of split files without the final extensions
+LATTICE_FILE_NAME = "lattice.tsam"
 NRG_OUTPUT_NAME = "output.csv" ##name of result from writeOutput.sh
 #output
 ENV_OUTPUT_NAME = "fitEnergies.tsam"
@@ -12,7 +12,7 @@ ENV_OUTPUT_NAME = "fitEnergies.tsam"
 #Read the energy CSV file, expects element 1 to be the ID number and element 2 to be the energy
 #of that index number
 def SetB(datLoc, nRows):
-    res = [0. for i in range(0, nRows)]
+    res = [None for i in range(0, nRows)]
     with open(datLoc, 'r') as infile:
         for n, lin in enumerate(infile):
             if(n == 0):

@@ -1,9 +1,17 @@
 #!/usr/bin/python3.6
 #Header for simulated annealing stuff
 DEFAULT_PREC = 11
+CART_EPS = 1.0E-4
 
 def ffmt(s, dec=DEFAULT_PREC):
     return f'{float(s):.{dec}f}'
+
+def DistSqd_s(a, b):
+    ret = 0
+    for i in range(0, 3):
+        ret += (b.crdsC[i] - a.crdsC[i])**(2)
+    ret += (b.spec - a.spec)**(2)
+    return ret
 
 class site:
     spec = None
@@ -14,7 +22,6 @@ class site:
         self.spec = None
         self.crdsD = [None, None, None]
         self.crdsC = [None, None, None]
-
 
     ##lineString = "2 0.25 0.65 0.89 1.0 2.0 3.0 ": 2 = species int, 3 direct coords, 3 cart crds
     def InitWithSpec(self, lineString, cCrds=True):
@@ -46,6 +53,44 @@ class env:
         self.sites = [] ##yes, this is necessary
         self.nrg = None
         self.isRepped = None
+
+    def EqTo(self, oth, nSpecTot):
+        if(self.nSites != oth.nSites):
+            return 0
+
+        ##Make sorted species arrays
+        s1, s2 = [0 for i in range(0, nSpecTot)], [0 for i in range(0, nSpecTot)]
+        for i in range(0, self.nSites):
+            s1[self.sites[i].spec] += 1
+        for i in range(0, oth.nSites):
+            s2[oth.sites[i].spec] += 1
+        ##Check for identical species array
+        for i in range(0, nSpecTot):
+            if(s1[i] != s2[i]):
+                return 0
+
+        ##Make sorted distance arrays
+        size = (self.nSites)*(self.nSites - 1) // 2
+        d1, d2 = [None for i in range(0, size)], [None for i in range(0, size)]
+        loc = 0
+        for i in range(0, self.nSites - 1):
+            for j in range(i + 1, self.nSites):
+                d1[loc] = DistSqd_s(self.sites[i], self.sites[j])
+                loc += 1
+        d1.sort()
+        loc = 0
+        for i in range(0, oth.nSites - 1):
+            for j in range(i + 1, oth.nSites):
+                d2[loc] = DistSqd_s(oth.sites[i], oth.sites[j])
+                loc += 1
+        d2.sort()
+        ##Check for identical distances
+        for i in range(0, size):
+            if(abs(d1[i] - d2[i]) > CART_EPS):
+                return 0
+
+        #Finially, if all of these checks pass, the two envs are identical
+        return 1
 
     def AddSiteWithSpec(self, siteLine):
         self.nSites += 1
