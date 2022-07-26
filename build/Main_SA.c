@@ -8,19 +8,18 @@
 #include "Decs.h"
 #include "Constants.h"
 
-//min only defined in windows VS somehow
-#define min(X,Y) (((X) < (Y)) ? (X) : (Y))
-
 char INFILE_LATT[LINESIZE] = "lattice.tsam\0";
 char INFILE_PRMS[LINESIZE] = "runparams.tsam\0";
 char INFILE_ENVS[LINESIZE] = "envs.tsam\0";
 
 
 int main(int argc, char *argv[]){
+
 	double ovwRCut = -1.0; 
 	uvlong ovwNStep = 0llu; uvlong ovwSStep = 0llu; 
 	double ovwSNrg = -1.0; int ovwRSeed;
 	double* ovwSwapProbs = NULL;
+	uint nMinStructs = 1u;
 	//CLIs---------------------------------------------------------------------
 	for (ushort i = 0; i < argc; ++i){
 		//Infile (lattice) name
@@ -81,6 +80,12 @@ int main(int argc, char *argv[]){
 			for(ushort j = 0; j < nEntries; ++j){
 				ovwSwapProbs[j] = atof(argv[i + 2 + j]);
 			}
+		}
+
+		//Number of unique min energy structures (no overwrite - there's no way
+		//to set this in the input files for now)
+		if((argv[i][0] == '-') && (argv[i][1] == 'o' || argv[i][1] == 'O')){
+			nMinStructs = (uint)atol(argv[i + 1]);
 		}
 	}
 	//-------------------------------------------------------------------------
@@ -183,8 +188,13 @@ int main(int argc, char *argv[]){
 
 	//Holds info on any unknown structures (needs to be before any gotos)
 	ushort nUnkEnvs; ushort* unkEnvs = calloc(nSites, sizeof(ushort));
-	//Ditto for the best site printout
-	ushort* bestSites = malloc(nSites*sizeof(ushort));
+	//Ditto for the best sites printout
+	double* bestNrgs = malloc(nMinStructs*sizeof(double));
+	uint nBstOccC = nMinStructs? 0u : 1u; //curr # of lowest energy structs
+	ushort** bestSites = malloc(nMinStructs*sizeof(ushort*));
+	for(uint i = 0; i < nMinStructs; ++i){
+		bestSites[i] = malloc(nSites*sizeof(ushort));
+	}
 
 	//Mark ALL initial envs as needing to be calculated + set their
 	//energies to zero
@@ -216,9 +226,12 @@ int main(int argc, char *argv[]){
 	}
 #endif
 	printf("JOB: energy of initial configuration e0 = %f eV/site\n", eCurr);
-	//and initialize the best sites to the initial sites
-	for(ushort i = 0; i < nSites; ++i){
-		bestSites[i] = *allSites[i]->species;
+	//and initialize the best sites/nrgs to the initial sites/nrgs
+	for(uint i = 0; i < nMinStructs; ++i){
+		bestNrgs[i] = eCurr;
+		for(ushort j = 0; j < nSites; ++j){
+			bestSites[i][j] = *allSites[j]->species;
+		}
 	}	
 	
 
@@ -305,10 +318,18 @@ int main(int argc, char *argv[]){
 		}
 		
 		///Update optimals, compute next iteration noise
-		if(eCurr < eOpt){ 
-			eOpt = eCurr;
-			for(ushort j = 0; j < nSites; ++j){
-				bestSites[j] = *allSites[j]->species;
+		if(nMinStructs > 1u){
+			BestSiteHandler(&bestNrgs, &bestSites, nMinStructs, allSites,
+							nSites, eCurr, &nBstOccC);
+			eOpt = bestNrgs[0];
+		}
+		else{
+			if(eCurr < eOpt){ 
+				eOpt = eCurr;
+				bestNrgs[0] = eOpt;
+				for(ushort j = 0; j < nSites; ++j){
+					bestSites[0][j] = *allSites[j]->species;
+				}
 			}
 		}
 		noise = 1.0 - (eCurr - eOpt)/eCurr; ///minus bc e0 is negative
@@ -319,10 +340,12 @@ int main(int argc, char *argv[]){
 
 	//Print out the optimal energy and configuration found
 	printf("JOB: energy of final configuration eOpt = %f eV/site\n", eOpt);
+	printf("JOB: BEGIN OPT ENERGY PRINTOUT\n");
+	EnergyPrintout(max(min(nBstOccC, nMinStructs), 1u), bestNrgs);
+	printf("JOB: END OPT ENERGY PRINTOUT\n");
 	printf("JOB: BEGIN OPT SITE PRINTOUT\n");
-	printf("%u %u\n", 1u, nSites);
-	for(ushort i = 0; i < nSites; ++i) printf("%u ", bestSites[i]);
-	printf("\nJOB: END OPT SITE PRINTOUT\n");
+	SitePrintout(max(min(nBstOccC, nMinStructs), 1u), nSites, bestSites);
+	printf("JOB: END OPT SITE PRINTOUT\n");
 
 	//Clean up-----------------------------------------------------------------
 	Clean_Exit:
@@ -381,7 +404,11 @@ int main(int argc, char *argv[]){
 	free(mapLo);
 	free(mapHi);
 	free(unkEnvs);
+	for(uint i = 0; i < max(min(nBstOccC, nMinStructs), 1u); ++i){
+		free(bestSites[i]);
+	}
 	free(bestSites);
+	free(bestNrgs);
 	free(recalcInds);
 
 	return 0;

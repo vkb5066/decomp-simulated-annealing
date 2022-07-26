@@ -32,3 +32,5 @@ Simulated annealing:
          here, '3' is the number of sublattices, followed by
          normalized swapping probabilities for the 0th, 1st, 2nd 
          sublattice.
+-o ..... Number of unique minimum energy structures to print
+         (default 1)

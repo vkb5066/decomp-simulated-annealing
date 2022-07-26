@@ -433,6 +433,13 @@ void SitePrintout(const uint nPrints, const ushort nSites, const ushort** arr){
 	}
 }
 
+void EnergyPrintout(const uint nPrints, const double* arr){
+	printf("%u\n", nPrints);
+	for(uint i = 0; i < nPrints; ++i){
+		printf("%f\n", arr[i]);
+	}
+}
+
 void DecPrintout(const uint nPrints, const uint maxCol, 
 				 const ushort nSites, const uint** arr){
 	printf("%u %u\n", nPrints, maxCol);

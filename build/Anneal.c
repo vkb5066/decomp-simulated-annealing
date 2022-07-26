@@ -134,3 +134,42 @@ double CalcTau(const uvlong step, const uvlong nStepsTot,
 	double fac = 1.0 - ((double)step/(double)nStepsTot);
 	return tauStart*fac*fac*fac*fac;
 }
+
+//Deals with organizing, adding to, or overwriting the array of best
+//sites and their energies
+//increments a success counter for each sucessful addition
+void BestSiteHandler(double*restrict*restrict bstNrgs, 
+					 ushort*restrict*restrict*restrict bstOccs, 
+					 const uint bstLen, 
+					 const site*restrict*restrict allSites,
+					 const ushort nSites,
+					 const double currNrg, uint*restrict suc){
+	//Early termination, hit most often:
+	//If the current energy is higher than any of the 
+	//energies in the array, don't bother doing the expensive searches
+	if((*bstNrgs)[bstLen - 1u] < currNrg) return;
+	
+	//Check to make sure this structure is unique: if not, skip
+	//Note: this might be better as a hash search...but theoretically we
+	//don't get here very often, so it might be fine
+	for(uint i = 0; i < bstLen; ++i){
+		for(ushort j = 0; j < nSites; ++j){
+			if((*bstOccs)[i][j] != *(allSites[j]->species)){
+				goto Next;
+			}
+		}
+		return; ///if we hit this, we've found a duplicate entry
+		Next: NOP
+	}
+	
+	//Get index to replace
+	uint repInd = SearchB_d(*bstNrgs, bstLen, currNrg);
+
+	//Shift the best energies and best occupancies to make room for new
+	//one if necessary
+	Insert_d(&(*bstNrgs), bstLen, repInd, currNrg);
+	Insert_o(&(*bstOccs), bstLen, repInd, allSites, nSites);
+
+	(*suc)++;
+	return;
+}

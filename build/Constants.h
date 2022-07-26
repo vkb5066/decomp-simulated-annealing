@@ -13,15 +13,19 @@ typedef struct sublat sublat;
 typedef struct branch branch;
 typedef struct hbkt hbkt;
 typedef struct gbkt gbkt;
+typedef struct obkt obkt;
 
 #define NOP ;
+//min, max only defined in windows VS somehow
+#define min(X,Y) (((X) < (Y)) ? (X) : (Y))
+#define max(X,Y) (((X) > (Y)) ? (X) : (Y))
 
 //Input-Output
 #define BASE 10u
 #define INFILE_LINE_MAX 1024u ///lines to read in infile before aborting
 #define LINESIZE 255u ///max len of any given line in input file
-#define GEN_PRINTEVERY 2048llu ///print out update every PRINTEVERY lines
-#define ANN_PRINTEVERY 2048llu ///ditto ^
+#define GEN_PRINTEVERY 65536llu ///print out update every PRINTEVERY lines
+#define ANN_PRINTEVERY 65536llu ///ditto ^
 #define GEN_PRINTSTYLE 1 //0: no print, 1: a ton of values, 2: % done
 #define ANN_PRINTSTYLE 1 ///ditto ^.  1: new lines, 2: no new lines
 
@@ -29,11 +33,12 @@ typedef struct gbkt gbkt;
 #define ELEMSIZE 8u ///max number of characters in an element string
 
 //Small element for approximate comparisons
+#define EVLT_EPS 1.0E-5 ///eV/site
 #define DRCT_EPS 1.0E-3 ///fractional
 #define CART_EPS 5.0E-4 ///cartesian
 
 //Whether to use std's qsort (0) or basic insertion sort (1)
-//Use insertion sort for small distance tables (< 15 or so)
+//Use insertion sort for small distance tables (< 50 or so)
 #define SORT_TYPE 1
 
 //Number of times we try to make a "significant" random swap before giving up
@@ -62,6 +67,12 @@ typedef struct gbkt gbkt;
 //Mind that this may be much larger than the env table
 #define GHASH_TABLE_MUL (ushort)37
 #define GHASH_TABLE_LEN (ushort)4096
+
+//Ditto above, but these are for the occupancy hash table
+//Mind that this is only used in the simulated annealing routine, so you can 
+//afford a much larger hash table size
+#define OHASH_TABLE_MUL (ushort)37
+#define OHASH_TABLE_LEN (ushort)32768 //careful! max(ushort) = 2^16 - 1
 
 //If false, assumes that the hash table is completly filled
 //i.e. if there is one entry in a hash bin, assume that it is the 

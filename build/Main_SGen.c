@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 	double ovwRCut = -1.0;
 	uvlong ovwNStep = 0llu; uvlong ovwSStep;
 	double ovwSNrg = -1.0; int ovwRSeed;
-	ushort ovwNDecsPerEnv = 0;
+	ushort ovwNDecsPerEnv = 1;
 	double* ovwSwapProbs = NULL;
 	//CLIs---------------------------------------------------------------------
 	for (ushort i = 0; i < argc; ++i){
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]){
 	ushort nDecsPerEnv = (ushort)startStep;
 	if(ovwRCut > 0.0) rCut = ovwRCut;
 	if(ovwNStep > 0llu) nSteps = ovwNStep;
-	if(ovwNDecsPerEnv > (ushort)0) nDecsPerEnv = ovwNDecsPerEnv;
+	if(ovwNDecsPerEnv > (ushort)1) nDecsPerEnv = ovwNDecsPerEnv;
 	if(ovwSNrg > 0.0) startNrg = ovwSNrg;
 	printf("ok\n");
 	

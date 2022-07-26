@@ -229,6 +229,14 @@ ushort ArrToHash_gh(const ushort len, const ushort* arr){
 	return bkt%GHASH_TABLE_LEN;
 }
 
+ushort ArrToHash_oh(const ushort len, const ushort* arr){
+	ushort bkt=arr[0];
+	for(ushort i = 0; i < len; ++i){
+		bkt = bkt*OHASH_TABLE_MUL + arr[i];
+	}
+	return bkt%OHASH_TABLE_LEN;
+}
+
 //Initializes a hash table of size HASH_TABLE_LEN and returns a pointer
 //to it
 void InitTable_h(hbkt* ptr){
@@ -248,6 +256,13 @@ void InitTable_gh(gbkt* ptr){
 	return;
 }
 
+void InitTable_oh(obkt* ptr){
+	for(ushort i = 0; i < OHASH_TABLE_LEN; ++i){
+		ptr[i].nEntries = 0u;
+		ptr[i].occArrs = malloc(0);
+	}
+}
+
 void DeallocTable_h(hbkt* h){
 	for(ushort i = 0; i < HASH_TABLE_LEN; ++i){
 		for(ushort j = 0; j < h[i].nEntries; ++j){
@@ -262,6 +277,12 @@ void DeallocTable_h(hbkt* h){
 void DeallocTable_gh(gbkt* g){
 	for(ushort i = 0; i < GHASH_TABLE_LEN; ++i){
 		free(g[i].sparseArrs); ///will free the actual sparse arrays elsewhere
+	}
+}
+
+void DeallocTable_oh(obkt* o){
+	for(ushort i = 0; i < OHASH_TABLE_LEN; ++i){
+		free(o[i].occArrs);
 	}
 }
 
@@ -324,7 +345,7 @@ void Add_gh(gbkt*restrict table, const uint*restrict sparseArr,
 	///Check for identical entries
 	for(uint i = 0; i < bkt->nEntries; ++i){
 		if(DecompCmpr_ss(nTotEnvs, sparseArr, bkt->sparseArrs[i])){
-			(*suc) = (ushort)0;
+			*suc = (ushort)0;
 			return;
 		}
 	}
@@ -333,11 +354,42 @@ void Add_gh(gbkt*restrict table, const uint*restrict sparseArr,
 	bkt->sparseArrs = realloc(bkt->sparseArrs,
 							  (bkt->nEntries + 1u)*sizeof(uint*));
 	bkt->sparseArrs[bkt->nEntries] = sparseArr;
-	(*hash) = hKey;
-	(*addInd) = bkt->nEntries;
+	*hash = hKey;
+	*addInd = bkt->nEntries;
 	bkt->nEntries++;
 	if(bkt->nEntries > 1u) (*colls)++;
-	(*suc) = (ushort)1;
+	*suc = (ushort)1;
+
+	return;
+}
+
+//Tries to add an array of occupancy values to hash table.  
+//If no copies exist, a deep copy of the sites are made and suc is set to 1
+//If a copy is found, nothing is done except suc is set to 0
+//Deallocating the memory on a failed addition is unnecessary (unlike the 
+//other Add_* has functions)
+void Add_oh(obkt*restrict table, const ushort*restrict sites,
+			const ushort nSites, ushort* restrict suc){
+	ushort hKey = ArrToHash_oh(nSites, sites);
+	obkt* bkt = table + hKey;
+
+	//Check for identical entries
+	for(uint i = 0; i < bkt->nEntries; ++i){
+		for(ushort j = 0; j < nSites; ++j){
+			if(sites[j] != bkt->occArrs[i][j]){
+				goto Next;
+			}
+		}
+		*suc = (ushort)0;
+		return;
+		Next: NOP
+	}
+
+	//If we're here, we havent found any identical entries - set the new one
+	bkt->occArrs = realloc(bkt->occArrs, (bkt->nEntries + 1u)*sizeof(ushort*));
+	bkt->occArrs[bkt->nEntries] = sites;
+	bkt->nEntries++;
+	*suc = (ushort)1;
 
 	return;
 }

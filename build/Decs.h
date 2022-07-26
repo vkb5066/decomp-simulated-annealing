@@ -28,6 +28,7 @@ void UnknownEnvHandler(const ushort nSites, const site** sites,
 					   const ushort nUnknowns, const ushort* unknownEnvs,
 					   const ushort nTrialEnvs, const env** trialEnvs);
 void SitePrintout(const uint nPrints, const ushort nSites, const ushort** arr);
+void EnergyPrintout(const uint nPrints, const double* arr);
 void DecPrintout(const uint nPrints, const uint maxCol,
 				 const ushort nSites, const uint** arr);
 void EnvPrintout(const uint nEnvs, const env** envs,
@@ -79,10 +80,20 @@ void UpdateNrg(double* restrict lastNrg, const ushort nSites,
 			   ushort* restrict* restrict recalcInds);
 double CalcTau(const uvlong step, const uvlong nStepsTot,
 			   const double tauStart);
+void BestSiteHandler(double*restrict*restrict bstNrgs,
+					 ushort*restrict*restrict*restrict bstOccs,
+					 const uint bstLen,
+					 const site*restrict*restrict allSites, 
+					 const ushort nSites,
+					 const double currNrg, uint*restrict suc);
 
-//Sorting
+//Sorting, searching
 void ISort_d(double** arr, const ushort len);
-
+uint SearchB_d(const double* arr, const uint len, const double val);
+void Insert_d(double** arr, const uint len, const uint ind, const double val);
+void Insert_o(ushort*restrict*restrict*restrict arr,
+			  const uint len, const uint ind,
+			  const site*restrict*restrict val, const ushort valLen);
 
 
 //-----------------------------------------------------------------------------
@@ -168,11 +179,22 @@ struct gbkt{
 	uint nEntries;
 	uint** sparseArrs;
 };
+ushort ArrToHash_gh(const ushort len, const ushort* arr);
 void InitTable_gh(gbkt* ptr);
 void DeallocTable_gh(gbkt* g);
 void Add_gh(gbkt*restrict table, const uint*restrict sparseArr,
 			const ushort nTotEnvs, uint*restrict colls,
 			ushort*restrict hash, uint*restrict addInd, ushort*restrict suc);
+
+struct obkt{
+	uint nEntries;
+	ushort** occArrs;
+};
+ushort ArrToHash_oh(const ushort len, const ushort* arr);
+void InitTable_oh(obkt* ptr);
+void DeallocTable_oh(obkt* o);
+void Add_oh(obkt*restrict table, const ushort*restrict sites,
+			const ushort nSites, ushort*restrict suc);
 
 //General add, search functions
 env* AddEnv(hbkt*restrict table, const ushort nSpecTot, 
