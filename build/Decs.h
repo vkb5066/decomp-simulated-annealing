@@ -19,7 +19,7 @@ void ReadWarmStartFile(const char* fileName,
 					   uint* cSizeE, uint* mSizeE, env*** arrE,
 					   uint* cSizeD, uint* mSizeD, uint*** arrD,
 					   ushort*** arrS,
-					   uint* unreppedEnvCount,
+					   uint* nReppedEnvs,
 					   const ushort nSpecTot, const ushort* fixSpecArr,
 					   const ushort nSites);
 

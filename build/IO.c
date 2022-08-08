@@ -328,7 +328,7 @@ void ReadWarmStartFile(const char* fileName,
 					   uint* cSizeE, uint* mSizeE, env*** arrE,
 					   uint* cSizeD, uint* mSizeD, uint*** arrD,
 					   ushort*** arrS,
-					   uint* unreppedEnvCount,
+					   uint* nReppedEnvs,
 					   const ushort nSpecTot, const ushort* fixSpecArr,
 					   const ushort nSites){
 	FILE* infile;
@@ -347,7 +347,7 @@ void ReadWarmStartFile(const char* fileName,
 	*mSizeE = 0u;
 	while((int)*mSizeE - (int)*cSizeE <= (int)nSites) *mSizeE += N_REALLOC;
 	*arrE = malloc((*mSizeE)*sizeof(env*));
-	*unreppedEnvCount = *cSizeE;
+	*nReppedEnvs = 0;
 	for(uint i = 0; i < *cSizeE; ++i){
 		env* thisEnv = malloc(sizeof(env));
 
@@ -376,7 +376,7 @@ void ReadWarmStartFile(const char* fileName,
 		fgets(line, LINESIZE, infile); ///energy: skip - don't need
 		fgets(line, LINESIZE, infile);
 		thisEnv->repped = strtoul(line, NULL, BASE);
-		if(thisEnv->repped) (*unreppedEnvCount)--;
+		(*nReppedEnvs) += thisEnv->repped;
 		(*arrE)[i] = thisEnv;
 	}
 

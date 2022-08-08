@@ -186,10 +186,12 @@ int main(int argc, char *argv[]){
 	if(warmStart){
 		printf("LOG: warm start - reading from file %s ... ",
 			   INFILE_WARM);
+		uint nReppedEnvs = 0;
 		ReadWarmStartFile(INFILE_WARM, &nUnqEnvC, &nUnqEnvM, &unqEnvs,
 						  &nUnqDecC, &nUnqDecM, &unqDecs, &unqSites,
-						  &nUnreppedEnvs, nSpecies, fixedSpecArr, nSites);
-		
+						  &nReppedEnvs, nSpecies, fixedSpecArr, nSites);
+		nUnreppedEnvs = nDecsPerEnv*nUnqEnvC - nReppedEnvs;		
+
 		////re-add things to search trees
 		env* tmpEnv; uint dummy1 = 0; ushort dummy2 = 0; ushort dummy3 = 0;
 		for(uint i = 0; i < nUnqEnvC; ++i){
