@@ -363,7 +363,7 @@ void ReadWarmStartFile(const char* fileName,
 			thisSite->species = fixSpecArr + spec; ///<- points to cnst
 			thisSite->crdsD[0] = strtod(next, &next); ///species array:
 			thisSite->crdsD[1] = strtod(next, &next); ///no need to 
-			thisSite->crdsD[2] = strtod(next, NULL); ///allocate a ton
+			thisSite->crdsD[2] = strtod(next, &next); ///allocate a ton
 			thisSite->crdsC[0] = strtod(next, &next); ///of extra ints 
 			thisSite->crdsC[1] = strtod(next, &next); ///if theyre  
 			thisSite->crdsC[2] = strtod(next, NULL); ///fixed

@@ -174,7 +174,6 @@ int main(int argc, char *argv[]){
 	//If a random site config vector results in a unique chem env vector, keep 
 	//both of them
 
-	///Warm start: re-initialize stuff if necessary
 	////unique environment array
 	uint nUnqEnvC; uint nUnqEnvM; env** unqEnvs;
 	uint nUnreppedEnvs;
@@ -183,12 +182,26 @@ int main(int argc, char *argv[]){
 	///stuff for unique site "decompositions" - in line with unq env decomps
 	ushort** unqSites;
 	
+
 	if(warmStart){
 		printf("LOG: warm start - reading from file %s ... ",
 			   INFILE_WARM);
 		ReadWarmStartFile(INFILE_WARM, &nUnqEnvC, &nUnqEnvM, &unqEnvs,
 						  &nUnqDecC, &nUnqDecM, &unqDecs, &unqSites,
 						  &nUnreppedEnvs, nSpecies, fixedSpecArr, nSites);
+		
+		////re-add things to search trees
+		env* tmpEnv; uint dummy1 = 0; ushort dummy2 = 0; ushort dummy3 = 0;
+		for(uint i = 0; i < nUnqEnvC; ++i){
+			unqEnvs[i]->decId = i;
+			tmpEnv = AddEnv(&unqEnvTable, nSpecies, unqEnvs[i], &envColls, 
+							&dummy1);
+		}
+		for(uint i = 0; i < nUnqDecC; ++i){
+			Add_gh(&unqDecTable, unqDecs[i], nSites, &decColls,
+				   &dummy2, &dummy1, &dummy3);
+		}
+
 		printf("ok\n");
 	}
 	else{	
@@ -204,12 +217,15 @@ int main(int argc, char *argv[]){
 		unqDecs = malloc(N_REALLOC*sizeof(uint*));
 	
 		unqSites = malloc(N_REALLOC*sizeof(ushort*));
+
+
 	}
+	////Initialize the current decomp array
 	ushort* currDecArr = calloc(nUnqEnvM, sizeof(ushort));
+
 
 	//Set all initial envs as needing to be recalced, do the first step
 	for(ushort i = 0; i < nSites; ++i) envBase[i]->recalc = (ushort)1;
-
 
 	///Continue to generate and eval random site permutations
 	printf("GEN: n(tot)      n(unqS)  n(unqE)  n(lunqE)    n(unrE)"
@@ -226,10 +242,13 @@ int main(int argc, char *argv[]){
 
 				/////Old env: the environment before resetting the comparison
 				/////arrays - use to update the previous env decomposition
+				/////On warm start, this won't mess anything up since 
+				/////envBase[i]->sortedDists is set to garbage values for n = 0
+				/////i.e. SearchEnv() will "always" return NULL if n = 0.  
 				oldEnv = SearchEnv(unqEnvTable, envBase[i], nSpecies);
-				if(oldEnv) currDecArr[oldEnv->decId]--;
-				SetSpecArr_e(&envBase[i], nSpecies);
-				SetDistArr_e(&envBase[i]);
+				if(oldEnv) currDecArr[oldEnv->decId]--; 
+				SetSpecArr_e(&envBase[i], nSpecies);    
+				SetDistArr_e(&envBase[i]);             
 				/////New env: the updated environment, now consistent with 
 				/////the random swaps - use to update the current env 
 				/////decomposition, or add new envs

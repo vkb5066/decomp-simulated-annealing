@@ -67,5 +67,10 @@ ushort RInt(const ushort len,
 		if((lo[i] <= r) && (r < hi[i]))
 			return i;
 	}
-	return len - (ushort)1;
+	///We might get here on account of floating point errors, esp. if
+	///some sublattices have a "0.0" prob. of swaps.
+	///In that case, 0 is always a good choice since we're guarenteed to 
+	///always have at least one sublattice, and the 0th is most likley the
+	///one with the highest prob. anyways
+	return (ushort)0;
 }

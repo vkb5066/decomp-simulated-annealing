@@ -17,11 +17,21 @@ void RSwap(sublat*restrict*restrict s,
 			ushort tmp = *(*s)->sites[n1]->species;
 			*(*s)->sites[n1]->species = *(*s)->sites[n2]->species;
 			*(*s)->sites[n2]->species = tmp;
-			(*spInd1) = (ushort)n1;
-			(*spInd2) = (ushort)n2;
+			*spInd1 = (ushort)n1;
+			*spInd2 = (ushort)n2;
 			return;
 		}
 	}
+	///We get here on some rare occasions.  On even rarer occasions, not
+	//updating spInd* will result in crashes (the last sucessful swap was on
+	//a sublattice with 64 sites so spInd1 = 63, spInd2 = 42.  Now, this sublat
+	//only has 32 sites, but we've exceeded N_GIVEUP so spInd* aren't updated.
+	//So when we try to index the new 32-site sublattice with the old spInds, 
+	//there is an OOB error.
+	//Each sublattice should always have at least one site, so 0 is a good 
+	//fallback option
+	*spInd1 = (ushort)0;
+	*spInd2 = (ushort)0;
 	return;
 }
 
